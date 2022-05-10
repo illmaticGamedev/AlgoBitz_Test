@@ -36,7 +36,6 @@ namespace algobitzTest
             }
         }
 
-
         public void OnPointerUp(PointerEventData eventData)
         {
             ResetController();
