@@ -12,6 +12,7 @@ namespace algobitzTest
         [SerializeField] private Transform ballParent;
         [SerializeField] private float moveSpeed;
         [SerializeField] private BallDropTarget ballDropTarget;
+        [SerializeField] private JoystickController joyController;
         
         [Header("Ball Dribble")]
         [SerializeField] private Rigidbody ballRb;
@@ -20,7 +21,7 @@ namespace algobitzTest
         
         [Header("UI References")] 
         [SerializeField] Slider bounceSpeedSlider;
-
+        
         
         private void Start()
         {
@@ -34,7 +35,20 @@ namespace algobitzTest
 
         private void Update()
         {
-            KeyboardControls();
+            if(Application.isMobilePlatform == false)
+                KeyboardControls();
+            
+            MoveWithJoystick();
+        }
+        
+        #region Move
+        
+        //Moving parent independently of the actual ball object (child) if the ball is bouncing.
+        public void MoveBall(Vector3 direction)
+        {
+            if(Mathf.Abs(ballRb.velocity.y) > 0.1f)
+                ballParent.Translate(direction * Time.deltaTime);
+            Physics.SyncTransforms();
         }
         
         private void KeyboardControls()
@@ -45,16 +59,12 @@ namespace algobitzTest
             }
 
             var InputVector = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
-            MoveInDirection(InputVector.normalized * moveSpeed);
+            MoveBall(InputVector.normalized * moveSpeed);
         }
 
-
-        //Moving parent independently of the actual ball object (child) if the ball is bouncing.
-        public void MoveInDirection(Vector3 direction)
+        private void MoveWithJoystick()
         {
-            if(Mathf.Abs(ballRb.velocity.y) > 0.1f)
-                ballParent.Translate(direction * Time.deltaTime);
-            Physics.SyncTransforms();
+            MoveBall(new Vector3(joyController.inputPos.x,0,-joyController.inputPos.y) * moveSpeed);
         }
 
         public void MoveToDropPoint()
@@ -74,7 +84,11 @@ namespace algobitzTest
                 }
             }
         }
+                
+        #endregion
         
+        #region Bounce
+
         public void Bounce()
         {
             ballRb.velocity = Vector3.down * bounceSpeed;
@@ -98,6 +112,8 @@ namespace algobitzTest
             ballRb.isKinematic = !ballRb.isKinematic;
             GameManager.Instance.canMoveDropPosition = ballRb.isKinematic;
         }
+
+        #endregion
 
     }
 }

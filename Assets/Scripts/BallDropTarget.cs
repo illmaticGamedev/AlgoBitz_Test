@@ -29,7 +29,9 @@ namespace algobitzTest
             }
 
         }
-
+        
+        
+        //Raycasting to check ground position and move the red dot there.
         private void FixedUpdate()
         {
             RaycastHit hit;
