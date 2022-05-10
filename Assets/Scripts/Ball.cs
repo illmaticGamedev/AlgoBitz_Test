@@ -6,7 +6,7 @@ namespace algobitzTest
 {
     public class Ball : MonoBehaviour
     {
-        [SerializeField] private float moveSpeed;
+        [SerializeField] private float MoveSpeed;
 
         public void MoveInDirection(Vector3 direction)
         {
