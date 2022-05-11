@@ -1,8 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace algobitzTest
 {
@@ -10,6 +8,9 @@ namespace algobitzTest
     {
         public static GameManager Instance;
         public bool canMoveDropPosition = false;
+
+        [SerializeField] private Text textHoldStatus;
+        [SerializeField] private Text textBounceSpeedStatus;
         
         private void Awake()
         {
@@ -19,6 +20,16 @@ namespace algobitzTest
         public void RestartGame()
         {
             SceneManager.LoadScene(sceneName: "Algobitz");
+        }
+
+        public void UpdateBounceSpeedUI(string state)
+        {
+            textBounceSpeedStatus.text = state;
+        }
+        
+        public void UpdateHoldStatusUI(bool state)
+        {
+            textHoldStatus.gameObject.SetActive(state);
         }
     }
 }

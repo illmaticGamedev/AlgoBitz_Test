@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,16 +14,21 @@ namespace algobitzTest
         
         [Header("Ball Dribble")]
         [SerializeField] private Rigidbody ballRb;
-        [SerializeField] private float bounceSpeed;
+        private float initialBounceSpeed;
+        private float bounceSpeed;
         [SerializeField] private float maxDribbleHeight;
         
         [Header("UI References")] 
         [SerializeField] Slider bounceSpeedSlider;
-        
+
+        private string[] speedLevelsTexts = new[] {"SLOW", "MEDIUM", "FAST"};
+        private int currentSpeedIndex = 0;
         
         private void Start()
         {
+            initialBounceSpeed = 15;
             ResetBounceSpeedFromSlider();
+            ChangeBounceSpeed();
         }
         private void FixedUpdate()
         {
@@ -39,6 +42,16 @@ namespace algobitzTest
                 KeyboardControls();
             
             MoveWithJoystick();
+
+            if (Input.GetKeyDown(KeyCode.H))
+            {
+                BallMotionState();
+            }
+            
+            if (Input.GetKeyDown(KeyCode.J))
+            {
+                ChangeBounceSpeed();
+            }
         }
         
         #region Move
@@ -64,7 +77,8 @@ namespace algobitzTest
 
         private void MoveWithJoystick()
         {
-            MoveBall(new Vector3(joyController.inputPos.x,0,-joyController.inputPos.y) * moveSpeed);
+            if(joyController.inputPos != Vector2.zero)
+                MoveBall(new Vector3(joyController.inputPos.x,0,-joyController.inputPos.y) * moveSpeed);
         }
 
         public void MoveToDropPoint()
@@ -111,6 +125,22 @@ namespace algobitzTest
         {
             ballRb.isKinematic = !ballRb.isKinematic;
             GameManager.Instance.canMoveDropPosition = ballRb.isKinematic;
+            GameManager.Instance.UpdateHoldStatusUI(ballRb.isKinematic);
+        }
+
+        public void ChangeBounceSpeed()
+        {
+            if (currentSpeedIndex == speedLevelsTexts.Length-1)
+            {
+                currentSpeedIndex = 0;
+            }
+            else
+            {
+                currentSpeedIndex += 1;
+            }
+            
+            GameManager.Instance.UpdateBounceSpeedUI(speedLevelsTexts[currentSpeedIndex]);
+            bounceSpeed = initialBounceSpeed * (currentSpeedIndex + 1);
         }
 
         #endregion
